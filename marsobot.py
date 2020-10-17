@@ -3,14 +3,13 @@ from typing import Tuple
 import pygame
 import sys
 import os
-from pygame.math import Vector2
 
 worldx = 1024
 worldy = 700
 fps = 40  # frame rate
 ani = 4  # animation cycles
 world = pygame.display.set_mode((worldx, worldy))
-pygame.display.set_caption("MARSOBOT")
+pygame.display.set_caption("MARSOBOT BY AYOUB")
 
 backdrop = pygame.image.load(os.path.join('images', 'texture_06.png'))
 backdropbox = world.get_rect()
@@ -23,6 +22,10 @@ ALPHA = (0, 255, 0)
 steps = 10
 rot = 90
 
+
+'''
+Main Classes
+'''
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -82,13 +85,29 @@ class Goal(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class Pass(pygame.sprite.Sprite):
+    def __init__(self, x,y,img="passe.png"):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(os.path.join('images',img))
+        self.image = pygame.transform.scale(self.image, (300, 150))
+        self.image.convert_alpha()
+        self.image.set_colorkey(ALPHA)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
 class Level():
     def good(stat,eloc):
         enemy = Goal(eloc[0], eloc[1], 'box_'+str(stat)+'.png')
         enemy_list = pygame.sprite.Group()
         enemy_list.add(enemy)
         return enemy_list
-
+    def renderPass(eloc):
+        passe = Pass(x=eloc[0], y=eloc[1])
+        passes = pygame.sprite.Group()
+        passes.add(passe)
+        return passes
+    
 
 '''
 Setup
@@ -105,24 +124,25 @@ player.rotate(rot)
 player_list = pygame.sprite.Group()
 player_list.add(player)
 
-eloc = []
-eloc = [750, 200]
-enemy_list = Level.good(1,eloc)
-
-
-'''
-Main Loop
-'''
+eloc = [730, 250]
+enemy_list = []
+enemy_list.append(Level.good(1,eloc))
+eloc2 = [660, 100]
 
 keys = [
     [pygame.K_DOWN,pygame.K_UP],
     [pygame.K_LEFT,pygame.K_RIGHT]
     ]
 
-index = 0
+
+index,oc = 0,1
+
+'''
+Main Loop
+'''
+
 
 while main:
-    #pygame.time.delay(100)
     for event in pygame.event.get():
         
         if event.type == pygame.QUIT:
@@ -133,7 +153,19 @@ while main:
                 main = False
                 
         if event.type == pygame.KEYDOWN:
-            
+            if event.key == ord('e'):
+                player.rotate(rot)
+                index = not index
+            if event.key == ord('r'):
+                player.rotate(-rot)
+                index = not index
+            if event.key == ord('o'):
+                oc = int(not oc)
+                enemy_list[0] = Level.good(oc,eloc)
+                if len(enemy_list) == 1:
+                    enemy_list.append(Level.renderPass(eloc2))
+                else:
+                    enemy_list.pop()
             if event.key == pygame.K_LEFT or event.key == ord('a'):
                 if event.key in keys[index]:
                     player.control(-steps, 0)
@@ -146,12 +178,6 @@ while main:
             if event.key == pygame.K_UP or event.key == ord('w'):
                 if event.key in keys[index]:
                     player.control(0, -steps)
-            if event.key == ord('e'):
-                player.rotate(rot)
-                index = not index
-            if event.key == ord('r'):
-                player.rotate(-rot)
-                index = not index
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == ord('a'):
@@ -166,6 +192,9 @@ while main:
             if event.key == pygame.K_UP or event.key == ord('w'):
                 if event.key in keys[index]:
                     player.control(0, steps)
+            if event.key == ord('o'):
+                enemy_list[0] = Level.good(oc,eloc)
+
                 
     
     #world.fill(WHITE)
@@ -173,8 +202,7 @@ while main:
     player.update()
     player_list.draw(world)
     #print(player.rect.x,player.rect.y)
-    if 560<=player.rect.x<= 690 and 250<=player.rect.y<= 280:
-        enemy_list = Level.good(0,eloc)
-    enemy_list.draw(world)
+    for enemy in enemy_list:
+        enemy.draw(world)
     pygame.display.flip()
     clock.tick(fps)
