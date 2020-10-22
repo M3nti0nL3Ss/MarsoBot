@@ -89,7 +89,7 @@ class Pass(pygame.sprite.Sprite):
     def __init__(self, x,y,img="passe.png"):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join('images',img))
-        self.image = pygame.transform.scale(self.image, (300, 150))
+        self.image = pygame.transform.scale(self.image, (650, 350))
         self.image.convert_alpha()
         self.image.set_colorkey(ALPHA)
         self.rect = self.image.get_rect()
@@ -124,10 +124,10 @@ player.rotate(rot)
 player_list = pygame.sprite.Group()
 player_list.add(player)
 
-eloc = [730, 250]
+eloc = [730, 450]
 enemy_list = []
 enemy_list.append(Level.good(1,eloc))
-eloc2 = [660, 100]
+eloc2 = [360, 60]
 
 keys = [
     [pygame.K_DOWN,pygame.K_UP],
