@@ -9,7 +9,7 @@ worldy = 700
 fps = 40  # frame rate
 ani = 4  # animation cycles
 world = pygame.display.set_mode((worldx, worldy))
-pygame.display.set_caption("MARSOBOT BY AYOUB")
+pygame.display.set_caption("MARSOBOT BY M3nti0nl3ss")
 
 backdrop = pygame.image.load(os.path.join('images', 'texture_06.png'))
 backdropbox = world.get_rect()
